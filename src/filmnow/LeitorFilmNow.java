@@ -1,6 +1,4 @@
-
 package filmnow;
-
 import java.io.BufferedReader;
 import java.io.FileNotFoundException;
 import java.io.FileReader;
@@ -60,7 +58,7 @@ public class LeitorFilmNow {
         String ano = campos[COLUNA_ANO].trim();
         String local = campos[COLUNA_LOCAL].trim();
 
-        fn.cadastraFilme(posicao, nome, ano, local);
+        fn.adicionaFilme(posicao, nome, ano, local);
     }
 
 }

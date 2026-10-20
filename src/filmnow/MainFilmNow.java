@@ -1,149 +1,183 @@
 package filmnow;
-
-import java.io.FileNotFoundException;
-import java.io.IOException;
-import java.util.Scanner;
+import java.io.*;
+import java.util.*;
 
 /**
- * Interface com menus texto para manipular o sistema FilmNow.
+ * Interface com menus texto para manipular o sistema FilmNow. Possuí diversos métodos auxiliares que conectam a classe
+ * do sistema, FilmNow, com a interface de texto.
  *
- * @author eliane
- *
+ * @author Ana Luísa Lopes
  */
+
 public class MainFilmNow {
-
     public static void main(String[] args) {
-        FilmNow fn = new FilmNow();
-
-        System.out.println("Carregando filmes ...");
+        Scanner sc = new Scanner(System.in);
+        FilmNow filmNow = new FilmNow();
         try {
             /*
              * Essa é a maneira de lidar com possíveis erros por falta do arquivo.
              */
-            carregaFilmes("filmes_inicial.csv", fn);
+            carregaFilmes("filmes_inicial.csv", filmNow);
         } catch (FileNotFoundException e) {
             System.err.println("Arquivo não encontrado: " + e.getMessage());
         } catch (IOException e) {
             System.err.println("Erro lendo arquivo: " + e.getMessage());
         }
 
-        Scanner scanner = new Scanner(System.in);
-        String escolha = "";
-        while (true) {
-            escolha = menu(scanner);
-            comando(escolha, fn, scanner);
+
+        while (true){
+            System.out.print(menu());
+
+            System.out.print("Opção> ");
+            String input = sc.nextLine().toUpperCase().trim();
+
+            System.out.println("");
+            executaOpcoes(input,sc,filmNow);
         }
-
-    }
-
-    /**
-     * Exibe o menu e captura a escolha do/a usuário/a.
-     *
-     * @param scanner Para captura da opção do usuário/a.
-     * @return O comando escolhido.
-     */
-
-    private static String menu(Scanner scanner) {
-        System.out.println(
-                "\n---\nMENU\n" +
-                        "(A)Adicionar filme\n" +
-                        "(M)Mostrar todos\n" +
-                        "(D)Detalhar filme\n" +
-                        "(S)air\n" +
-                        "\n" +
-                        "Opção> ");
-        return scanner.next().toUpperCase();
     }
 
     /**
      * Interpreta a opção escolhida por quem está usando o sistema.
      *
-     * @param opcao   Opção digitada.
-     * @param fn  O sistema FilmNow que estamos manipulando.
-     * @param scanner Objeto scanner para o caso do comando precisar de mais input.
+     * @param input Opção digitada.
+     * @param filmNow O sistema FilmNow que estamos manipulando.
+     * @param sc Objeto scanner para o caso do comando precisar de mais input.
      */
-    private static void comando(String opcao, FilmNow fn, Scanner scanner) {
-        switch (opcao) {
-            case "A":
-                adicionaFilme(fn, scanner);
-                break;
-            case "M":
-                mostrarFilmes(fn);
-                break;
-            case "D":
-                detalharFilme(fn, scanner);
-                break;
-            case "S":
-                sai();
-                break;
-            default:
-                System.out.println("Opção inválida!");
+    private static void executaOpcoes(String input, Scanner sc, FilmNow filmNow){
+        if (!input.equals("A")&& !input.equals("M")&& !input.equals("D")&& !input.equals("E") && !input.equals("H") && !input.equals("R")&&!input.equals("S")){
+            System.out.println("OPÇÃO INVÁLIDA!");
+            System.out.println("");
+        }
+        if(input.equals("A")){
+            adiciona(sc,filmNow);
+        }
+        if(input.equals("D")){
+            detalhaFilme(sc,filmNow);
+        }
+        if(input.equals("M")){
+            mostraTodosFilmes(filmNow);
+        }
+        if(input.equals("E")){
+            mostraHotList(filmNow);
+        }
+        if(input.equals("H")){
+            adicionaHotList(sc,filmNow);
+        }
+        if(input.equals("R")){
+            removeHotList(sc,filmNow);
+        }
+        if (input.equals("S")){
+            sai();
         }
     }
 
     /**
-     * Imprime lista de filmes.
+     * Exibe o menu e suas opções para o usuário/a
      *
-     * @param fn O sistema FilmNow a ser manipulado.
+     * @return A representação textual do menu.
      */
-    private static void mostrarFilmes(FilmNow fn) {
-
-        String[] filmes = fn.getFilmes();
-        for (int i = 0; i < filmes.length; i++) {
-            if (filmes[i] != null) {
-                System.out.println(formataFilme(i, filmes[i]));
-            }
-        }
-    }
-
-    /**
-     * Imprime os detalhes de um dos filmes.
-     *
-     * @param fn O sistema FilmNow a ser manipulado.
-     * @param scanner Scanner para capturar qual contato.
-     */
-    private static void detalharFilme(FilmNow fn, Scanner scanner) {
-        System.out.print("\nQual filme> ");
-        int posicao = scanner.nextInt();
-        String filme = fn.getFilme(posicao);
-        System.out.println("Dados do filme:\n" + filme);
-    }
-
-    /**
-     * Formata um filme para impressão.
-     *
-     * @param posicao A posição do filme (que é exibida)/
-     * @param filme O filme a ser impresso.
-     * @return A String formatada.
-     */
-    private static String formataFilme(int posicao, String filme) {
-        return posicao + " - " + filme;
-    }
-
-    /**
-     * Cadastra um filme no sistema.
-     *
-     * @param fn O sistema FilmNow a ser manipulado.
-     * @param scanner Scanner para pedir informações do contato.
-     */
-    private static void adicionaFilme(FilmNow fn, Scanner scanner) {
-        System.out.print("\nPosição no sistema> ");
-        int posicao = scanner.nextInt();
-        System.out.print("\nNome> ");
-        String nome = scanner.next();
-        System.out.print("\nAno> ");
-        String ano = scanner.next();
-        System.out.print("\nLocal> ");
-        String local = scanner.next();
-        fn.cadastraFilme(posicao, nome, ano, local);
+    private static String menu(){
+        String menuString = "(A)Adicionar filme \n(M)Mostrar todos \n(D)Detalhar filme \n(E)Exibir HotList \n(H)Atribuir Hot \n(R)Remover Hot  \n(S)Sair \n";
+        System.out.println("");
+        return menuString;
     }
 
     /**
      * Sai da aplicação.
      */
     private static void sai() {
-        System.out.println("\nVlw flw o/");
+        System.out.println("Finalizando o programa. Volte sempre! \uD83C\uDFA5");
         System.exit(0);
+    }
+
+    /**
+     * Cadastra um filme no sistema.
+     *
+     * @param sc Scanner para pedir informações do filme.
+     * @param filmNow O sistema FilmNow a ser manipulado.
+     */
+    private static void adiciona(Scanner sc, FilmNow filmNow){
+        System.out.print("Posição> ");
+        int pos = Integer.parseInt(sc.nextLine());
+        System.out.print("");
+
+        System.out.print("Nome> ");
+        String nome = sc.nextLine();
+        System.out.print("");
+
+        System.out.print("Ano> ");
+        String ano = sc.nextLine();
+        System.out.print("");
+
+        System.out.print("Local> ");
+        String ondeAssistir = sc.nextLine();
+        System.out.print("");
+
+        System.out.println(filmNow.adicionaFilme(pos,nome,ano,ondeAssistir));
+    }
+
+    /**
+     * Imprime os detalhes de um dos filmes.
+     *
+     * @param sc Scanner para identificar o filme.
+     * @param filmNow O sistema FilmNow a ser manipulado.
+     */
+    private static void detalhaFilme(Scanner sc, FilmNow filmNow){
+        System.out.print("Posição> ");
+        int pos = Integer.parseInt(sc.nextLine());
+        System.out.print("");
+
+        System.out.println(filmNow.detalhaFilme(pos));
+    }
+
+    /**
+     * Imprime lista de filmes.
+     *
+     * @param filmNow O sistema FilmNow a ser manipulado.
+     */
+    private static void mostraTodosFilmes(FilmNow filmNow){
+        System.out.println(filmNow.visualizaFilmes());
+    }
+
+    /**
+     * Imprime lista de filmes na hot list.
+     *
+     * @param filmNow O sistema FilmNow a ser manipulado.
+     */
+    private static void mostraHotList(FilmNow filmNow){
+        System.out.println(filmNow.exibirHotList());
+    }
+
+    /**
+     * Cadastra um filme na hot list.
+     *
+     * @param sc Scanner para capturar qual o filme.
+     * @param filmNow O sistema FilmNow a ser manipulado.
+     */
+    private static void adicionaHotList(Scanner sc, FilmNow filmNow){
+        System.out.print("Filme> ");
+        int filme = Integer.parseInt(sc.nextLine());
+        System.out.print("");
+
+        System.out.print("Posição> ");
+        int pos = Integer.parseInt(sc.nextLine());
+        System.out.print("");
+
+        System.out.println(filmNow.adicionarHot(pos,filme));
+    }
+
+    /**
+     * Retira um filme da hot list.
+     *
+     * @param sc Scanner para capturar qual o filme.
+     * @param filmNow O sistema FilmNow a ser manipulado.
+     */
+    private static void removeHotList(Scanner sc, FilmNow filmNow){
+        System.out.print("Posição> ");
+        int pos = Integer.parseInt(sc.nextLine());
+        System.out.print("");
+
+        System.out.println(filmNow.removerHot(pos));
     }
 
     /**
