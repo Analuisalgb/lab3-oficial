@@ -28,6 +28,18 @@ public class Filme {
      * @param ondeAssistir
      */
     public Filme(String nome, String anoDeLancamento, String ondeAssistir) {
+        if (nome.isBlank()){
+            throw new IllegalArgumentException("Nome inválido.");
+        }
+        if(nome == null){
+            throw new NullPointerException("Nome inválido.");
+        }
+        if (ondeAssistir.isBlank()){
+            throw new IllegalArgumentException("Local onde assistir inválido.");
+        }
+        if(ondeAssistir == null){
+            throw new NullPointerException("Local onde assistir inválido.");
+        }
         this.nome = nome;
         this.anoDeLancamento = anoDeLancamento;
         this.ondeAssistir = ondeAssistir;
@@ -89,9 +101,13 @@ public class Filme {
     public String toString() {
         String fogo = "";
         if (isHot()){
-            fogo = "\uD83D\uDD25";
+            fogo = "\uD83D\uDD25 ";
         }
-        return fogo + " " +this.nome + ", " + anoDeLancamento + ", " + ondeAssistir;
+        if (anoDeLancamento.isBlank() || anoDeLancamento.isEmpty()){
+            return fogo + this.nome + "\n" + ondeAssistir;
+        }
+        else{
+        return fogo +this.nome + ", " + anoDeLancamento + "\n" + ondeAssistir;}
     }
 
     /**

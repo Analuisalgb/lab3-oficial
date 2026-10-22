@@ -36,15 +36,15 @@ public class FilmNow {
      * @return possíveis erros ao se adicionar o filme, esclarecidos na especificação.
      */
     public String adicionaFilme(int posicaoLista, String nome, String anoDeLancamento, String ondeAssistir) {
-        Filme filme = new Filme(nome,anoDeLancamento,ondeAssistir);
         if (posicaoLista < 1 || posicaoLista >= MAXFILMES){
             return "POSIÇÃO INVÁLIDA";
         }
-        else if(temFilme(filme)){
-            return "FILME JÁ ADICIONADO!";
-        }
         else if((nome == null || nome.isBlank()) || (ondeAssistir == null || ondeAssistir.isBlank())){
             return "FILME INVALIDO";
+        }
+        Filme filme = new Filme(nome,anoDeLancamento,ondeAssistir);
+         if(temFilme(filme)){
+            return "FILME JÁ ADICIONADO!";
         }
         else {
             filmes[posicaoLista] = filme;
@@ -86,7 +86,7 @@ public class FilmNow {
             return "POSIÇÃO INVÁLIDA";
         }
         else if (filmes[posicaoLista] == null){
-            return "POSIÇÃO INVÁLIDA";
+            return "";
         }
 
         return filmes[posicaoLista].toString();
